@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -78,6 +78,7 @@ const createWindow = async () => {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
+      webSecurity: !isDebug,
     },
   });
 
@@ -124,9 +125,17 @@ app.on('window-all-closed', () => {
   }
 });
 
+async function handleFileOpen() {
+  const { filePaths } = await dialog.showOpenDialog({
+    properties: ['openFile', 'multiSelections'],
+  });
+  return filePaths;
+}
+
 app
   .whenReady()
   .then(() => {
+    ipcMain.handle('dialog:openFile', handleFileOpen);
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

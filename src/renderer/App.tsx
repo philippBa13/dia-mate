@@ -7,7 +7,7 @@ import placeHolderImg from '../../assets/images/winter_mountains_comic.jpg';
 
 function AppBase() {
   return (
-    <Grid container spacing={0}>
+    <Grid container spacing={1}>
       <Grid item>
         <Grid container spacing={1}>
           <Grid item xs={2.5}>

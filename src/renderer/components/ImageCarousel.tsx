@@ -1,14 +1,13 @@
-export default function ImageCarousel() {
+export type ImageCarouselProps = {
+  paths: string[];
+};
 
-    const thumbnails = [{
-        url: "img/"
-    }]
-
-
-    return (
-        <div id="image-list">
-
-        </div>
-
-    );
+export default function ImageCarousel(props: ImageCarouselProps) {
+  return (
+    <div id="image-list">
+      {props.paths?.map((path) => {
+        return <img src={`file://${path}`} alt="some" />;
+      })}
+    </div>
+  );
 }
