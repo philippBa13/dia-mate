@@ -3,18 +3,49 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 
- body{
+body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
- }
-
- img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
-#image-thumbs {
+.image-screen {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  align-items: center;
+}
+
+.image-screen img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  display: block;
+}
+
+.swiper-slide {
+  height: auto;
+}
+.image-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 160px;
+  width: 100%;
+  background-color: lightgray;
+}
+
+.image-carousel img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide .imgBx {
+  width: 100%;
+  height: 140px;
+  border-style: solid;
+  border-color: gray;
+}
+
+.swiper-slide .active {
+  border-color: lightcoral;
 }

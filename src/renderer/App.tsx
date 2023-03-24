@@ -1,32 +1,30 @@
-import { Grid } from '@mui/material';
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import Settings from './components/Settings';
+import { Box, Grid } from '@mui/material';
+import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
+import placeHolderImg from '../../assets/images/winter_mountains_comic.jpg';
 import './App.css';
 import ImageBar from './components/ImageBar';
-import placeHolderImg from '../../assets/images/winter_mountains_comic.jpg';
+import Settings from './components/Settings';
 
 function AppBase() {
   return (
-    <Grid container spacing={1}>
-      <Grid item>
-        <Grid container spacing={1}>
-          <Grid item xs={2.5}>
-            <Settings />
-          </Grid>
-          <Grid item xs={9.5}>
+    <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+      <Grid container spacing={1} style={{ marginBottom: 2 }}>
+        <Grid item xs={2.5}>
+          <Settings />
+        </Grid>
+        <Grid item xs={9.5}>
+          <div className="image-screen">
             <img src={placeHolderImg} alt="Wonderful Winter Landscape" />
-          </Grid>
+          </div>
         </Grid>
       </Grid>
 
-      <Grid item>
-        <Grid container spacing={1}>
-          <Grid item>
-            <ImageBar />
-          </Grid>
+      <Grid container spacing={1}>
+        <Grid item sx={{ minWidth: 0 }}>
+          <ImageBar />
         </Grid>
       </Grid>
-    </Grid>
+    </Box>
   );
 }
 

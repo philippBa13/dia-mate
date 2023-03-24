@@ -19,7 +19,13 @@ export default function ImageBar() {
     <>
       <Grid container spacing={1}>
         <Grid item>
-          <Button variant="outlined" endIcon={<ClearOutlined />}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setPictures([]);
+            }}
+            endIcon={<ClearOutlined />}
+          >
             Clear
           </Button>
         </Grid>
@@ -33,8 +39,13 @@ export default function ImageBar() {
           </Button>
         </Grid>
       </Grid>
-      <Grid container>
-        <ImageCarousel paths={pictures} />
+      <Grid
+        container
+        sx={{ backgroundColor: 'lightBlue', minWidth: 0, minHeight: 0 }}
+      >
+        <Grid item sx={{ minWidth: 0, minHeight: 0 }}>
+          <ImageCarousel paths={pictures} />
+        </Grid>
       </Grid>
     </>
   );
