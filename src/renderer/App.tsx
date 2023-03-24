@@ -7,7 +7,7 @@ import Settings from './components/Settings';
 
 function AppBase() {
   return (
-    <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+    <Box sx={{ minWidth: 0 }}>
       <Grid container spacing={1} style={{ marginBottom: 2 }}>
         <Grid item xs={2.5}>
           <Settings />
@@ -19,11 +19,10 @@ function AppBase() {
         </Grid>
       </Grid>
 
-      <Grid container spacing={1}>
-        <Grid item sx={{ minWidth: 0 }}>
-          <ImageBar />
-        </Grid>
-      </Grid>
+      <ImageBar />
+      {/* <Grid container spacing={1} sx={{ minWidth: 0, height: 'auto' }}>
+        <Grid item sx={{ minWidth: 0 }} />
+      </Grid> */}
     </Box>
   );
 }

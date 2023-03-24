@@ -7,14 +7,19 @@ export default function ImageBar() {
   const [pictures, setPictures] = useState<string[]>([]);
 
   async function selectPictures() {
-    const pics: string[] = await window.electron.ipcRenderer.invoke(
+    const newPics: string[] = await window.electron.ipcRenderer.invoke(
       'dialog:openFile'
     );
-    if (pics) {
-      setPictures(pics);
+    if (newPics) {
+      setPictures((oldPics) => [...oldPics, ...newPics]);
     }
   }
 
+  function addPic(path: string) {
+    if (path) {
+      setPictures((oldPics) => [...oldPics, path]);
+    }
+  }
   return (
     <>
       <Grid container spacing={1}>
@@ -43,9 +48,12 @@ export default function ImageBar() {
         container
         sx={{ backgroundColor: 'lightBlue', minWidth: 0, minHeight: 0 }}
       >
-        <Grid item sx={{ minWidth: 0, minHeight: 0 }}>
-          <ImageCarousel paths={pictures} />
-        </Grid>
+        <Grid item sx={{ minWidth: 0 }} />
+        <ImageCarousel
+          paths={pictures}
+          selectPics={selectPictures}
+          addPic={addPic}
+        />
       </Grid>
     </>
   );

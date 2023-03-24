@@ -23,12 +23,9 @@ body {
 .swiper-slide {
   height: auto;
 }
+
 .image-carousel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  height: 160px;
+  margin: 5px;
   width: 100%;
   background-color: lightgray;
 }
@@ -47,5 +44,20 @@ body {
 }
 
 .swiper-slide .active {
-  border-color: lightcoral;
+  border-color: black;
+}
+
+.drag-drop {
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed grey,
+}
+
+.drag-drop-over {
+  opacity: 0.3;
+  border: 3px dashed black;
+}
+
+#drop * {
+  pointer-events: none;
 }
