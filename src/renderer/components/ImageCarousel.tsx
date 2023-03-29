@@ -3,12 +3,16 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperSlide, useSwiperSlide } from 'swiper/react';
 
 import { CollectionsOutlined } from '@mui/icons-material';
 import { Box, Button, Container } from '@mui/material';
+import { useContext, useEffect, useRef } from 'react';
+import { ImagePreviewContext } from 'renderer/App';
 import { Navigation, Pagination } from 'swiper';
-import React, { useEffect, useRef } from 'react';
+
+const SUPPORTED_IMG_TYPES = ['jpg', 'jpeg', 'png', 'svg', 'gif'] as const;
+export type SupportedImageType = (typeof SUPPORTED_IMG_TYPES)[number];
 
 export type ImageCarouselProps = {
   paths: string[];
@@ -19,14 +23,18 @@ export type ImageCarouselProps = {
 export default function ImageCarousel(props: ImageCarouselProps) {
   const { paths, selectPics, addPic } = props;
   const dropRef = useRef<HTMLDivElement>(null);
+  const { setPreviewImage } = useContext(ImagePreviewContext);
+  const swiperSlide = useSwiperSlide();
+
+  // useEffect(() => {
+  //   swiper.slides[swiper.activeIndex]
+  // }, [swiper.activeIndex]);
 
   useEffect(() => {
     // 👇 Get the DOM element from the React element
     const element = dropRef.current;
     let enterTarget: EventTarget | null = null;
-
     if (!element) return undefined;
-
     const handleDrop = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
@@ -78,12 +86,21 @@ export default function ImageCarousel(props: ImageCarouselProps) {
     };
   }, []);
 
+  function isSupportedType(ext: string): ext is SupportedImageType {
+    return SUPPORTED_IMG_TYPES.includes(ext as SupportedImageType);
+  }
+
   // const items = paths?.map((path) => (
   //   <img src={`file://${path}`} onDragStart={handleDragStart} alt="simple" />
   // ));
   return (
     <div className="image-carousel">
       <Swiper
+        onActiveIndexChange={(swiper) => {
+          const path = swiper.slides[swiper.activeIndex].getAttribute('id');
+          console.log(path);
+          setPreviewImage(`file://${path}`);
+        }}
         modules={[Navigation, Pagination]}
         grabCursor={false}
         pagination={{
@@ -102,15 +119,26 @@ export default function ImageCarousel(props: ImageCarouselProps) {
         slidesPerView={4}
       >
         {paths.length > 0 ? (
-          paths.map((path) => (
-            <SwiperSlide>
-              {({ isActive }) => (
-                <div className={isActive ? 'imgBx active' : 'imgBx'}>
-                  <img src={`file://${path}`} alt="" />
-                </div>
-              )}
-            </SwiperSlide>
-          ))
+          paths
+            .filter((el) => {
+              const ext: string = el
+                .substring(el.lastIndexOf('.') + 1)
+                .toLowerCase();
+              return isSupportedType(ext);
+            })
+            .map((el) => {
+              console.log('map');
+              return el;
+            })
+            .map((el) => (
+              <SwiperSlide id={el} key={el}>
+                {({ isActive }) => (
+                  <div className={isActive ? 'imgBx active' : 'imgBx'}>
+                    <img src={`file://${el}`} alt="" />
+                  </div>
+                )}
+              </SwiperSlide>
+            ))
         ) : (
           <Container ref={dropRef} maxWidth="sm" className="drag-drop">
             <Box sx={{ textAlign: 'center', margin: '5px' }}>
