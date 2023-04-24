@@ -1,25 +1,51 @@
 import { AddPhotoAlternateOutlined, ClearOutlined } from '@mui/icons-material';
 import { Button, Grid } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { ImagePreviewContext } from 'renderer/App';
 import ImageCarousel from './ImageCarousel';
+import placeHolderImg from '../../../assets/images/winter_mountains_comic.jpg';
+
+const SUPPORTED_IMG_TYPES = ['jpg', 'jpeg', 'png', 'svg', 'gif'] as const;
+export type SupportedImageType = (typeof SUPPORTED_IMG_TYPES)[number];
 
 export default function ImageBar() {
   const [pictures, setPictures] = useState<string[]>([]);
+  const { previewImage, setPreviewImage } = useContext(ImagePreviewContext);
+
+  function isSupportedType(ext: string): ext is SupportedImageType {
+    return SUPPORTED_IMG_TYPES.includes(ext as SupportedImageType);
+  }
+
+  function addPic(path: string, setAsPreview: boolean) {
+    if (path) {
+      const ext = path.substring(path.lastIndexOf('.') + 1).toLowerCase();
+      if (isSupportedType(ext)) {
+        setPictures((oldPics) => [...oldPics, path]);
+        console.log(previewImage);
+        console.log(placeHolderImg);
+        if (setAsPreview && previewImage === placeHolderImg) {
+          setPreviewImage(path);
+        }
+      }
+    }
+  }
 
   async function selectPictures() {
     const newPics: string[] = await window.electron.ipcRenderer.invoke(
       'dialog:openFile'
     );
     if (newPics) {
-      setPictures((oldPics) => [...oldPics, ...newPics]);
+      newPics
+        .filter((el) => {
+          const ext = el.substring(el.lastIndexOf('.') + 1).toLowerCase();
+          return isSupportedType(ext);
+        })
+        .forEach((el, idx) => {
+          addPic(el, idx === 0);
+        });
     }
   }
 
-  function addPic(path: string) {
-    if (path) {
-      setPictures((oldPics) => [...oldPics, path]);
-    }
-  }
   return (
     <>
       <Grid container spacing={1}>
@@ -28,6 +54,7 @@ export default function ImageBar() {
             variant="outlined"
             onClick={() => {
               setPictures([]);
+              setPreviewImage(placeHolderImg);
             }}
             endIcon={<ClearOutlined />}
           >
@@ -53,6 +80,7 @@ export default function ImageBar() {
           paths={pictures}
           selectPics={selectPictures}
           addPic={addPic}
+          setPreviewImage={setPreviewImage}
         />
       </Grid>
     </>

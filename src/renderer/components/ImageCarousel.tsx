@@ -8,22 +8,18 @@ import { Swiper, SwiperSlide, useSwiperSlide } from 'swiper/react';
 import { CollectionsOutlined } from '@mui/icons-material';
 import { Box, Button, Container } from '@mui/material';
 import { useContext, useEffect, useRef } from 'react';
-import { ImagePreviewContext } from 'renderer/App';
 import { Navigation, Pagination } from 'swiper';
-
-const SUPPORTED_IMG_TYPES = ['jpg', 'jpeg', 'png', 'svg', 'gif'] as const;
-export type SupportedImageType = (typeof SUPPORTED_IMG_TYPES)[number];
 
 export type ImageCarouselProps = {
   paths: string[];
   selectPics: () => Promise<void>;
-  addPic: (path: string) => void;
+  addPic: (path: string, setAsPreview: boolean) => void;
+  setPreviewImage: (path: string) => void;
 };
 
 export default function ImageCarousel(props: ImageCarouselProps) {
-  const { paths, selectPics, addPic } = props;
+  const { paths, selectPics, addPic, setPreviewImage } = props;
   const dropRef = useRef<HTMLDivElement>(null);
-  const { setPreviewImage } = useContext(ImagePreviewContext);
   const swiperSlide = useSwiperSlide();
 
   // useEffect(() => {
@@ -42,9 +38,7 @@ export default function ImageCarousel(props: ImageCarouselProps) {
       for (const f of e.dataTransfer?.files!) {
         // Using the path attribute to get absolute file path
         console.log('File Path of dragged files: ', f.path);
-        addPic(f.path); // assemble array for main.js
       }
-
       element.classList.remove('drag-drop-over');
       console.log('dropped something');
     };
@@ -86,20 +80,15 @@ export default function ImageCarousel(props: ImageCarouselProps) {
     };
   }, []);
 
-  function isSupportedType(ext: string): ext is SupportedImageType {
-    return SUPPORTED_IMG_TYPES.includes(ext as SupportedImageType);
-  }
-
   // const items = paths?.map((path) => (
   //   <img src={`file://${path}`} onDragStart={handleDragStart} alt="simple" />
   // ));
   return (
     <div className="image-carousel">
       <Swiper
-        onActiveIndexChange={(swiper) => {
+        onSlideChange={(swiper) => {
           const path = swiper.slides[swiper.activeIndex].getAttribute('id');
-          console.log(path);
-          setPreviewImage(`file://${path}`);
+          if (path) setPreviewImage(`file://${path}`);
         }}
         modules={[Navigation, Pagination]}
         grabCursor={false}
@@ -119,26 +108,15 @@ export default function ImageCarousel(props: ImageCarouselProps) {
         slidesPerView={4}
       >
         {paths.length > 0 ? (
-          paths
-            .filter((el) => {
-              const ext: string = el
-                .substring(el.lastIndexOf('.') + 1)
-                .toLowerCase();
-              return isSupportedType(ext);
-            })
-            .map((el) => {
-              console.log('map');
-              return el;
-            })
-            .map((el) => (
-              <SwiperSlide id={el} key={el}>
-                {({ isActive }) => (
-                  <div className={isActive ? 'imgBx active' : 'imgBx'}>
-                    <img src={`file://${el}`} alt="" />
-                  </div>
-                )}
-              </SwiperSlide>
-            ))
+          paths.map((el) => (
+            <SwiperSlide id={el} key={el}>
+              {({ isActive }) => (
+                <div className={isActive ? 'imgBx active' : 'imgBx'}>
+                  <img src={`file://${el}`} alt="" />
+                </div>
+              )}
+            </SwiperSlide>
+          ))
         ) : (
           <Container ref={dropRef} maxWidth="sm" className="drag-drop">
             <Box sx={{ textAlign: 'center', margin: '5px' }}>
