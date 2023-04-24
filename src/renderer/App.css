@@ -16,6 +16,7 @@ body {
 .image-screen img {
   width: 70%;
   height: 70%;
+  max-height: 600px;
   object-fit: contain;
   display: block;
 }
@@ -36,15 +37,28 @@ body {
   height: 100%;
 }
 
-.swiper-slide .imgBx {
+.image-slide {
+  position: relative;
+  height: 140px;
+}
+
+.imgBx {
   width: 100%;
   height: 140px;
   border-style: solid;
   border-color: gray;
+  border-width: 1px;
+}
+
+.delete-icon {
+  position: 'absolute';
+  top: 0;
+  right: 22
 }
 
 .swiper-slide .active {
   border-color: black;
+  border-width: 1.5px;
 }
 
 .drag-drop {

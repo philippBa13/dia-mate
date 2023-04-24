@@ -3,28 +3,26 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { Swiper, SwiperSlide, useSwiperSlide } from 'swiper/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { CollectionsOutlined } from '@mui/icons-material';
 import { Box, Button, Container } from '@mui/material';
 import { useContext, useEffect, useRef } from 'react';
-import { Navigation, Pagination } from 'swiper';
+import { Navigation, Pagination, Scrollbar } from 'swiper';
+import { ImagePreviewContext } from 'renderer/App';
+import ImageSlide from './ImageSlide';
 
 export type ImageCarouselProps = {
   paths: string[];
   selectPics: () => Promise<void>;
   addPic: (path: string, setAsPreview: boolean) => void;
-  setPreviewImage: (path: string) => void;
+  removePic: (path: string) => void;
 };
 
 export default function ImageCarousel(props: ImageCarouselProps) {
-  const { paths, selectPics, addPic, setPreviewImage } = props;
+  const { paths, selectPics, addPic, removePic } = props;
   const dropRef = useRef<HTMLDivElement>(null);
-  const swiperSlide = useSwiperSlide();
-
-  // useEffect(() => {
-  //   swiper.slides[swiper.activeIndex]
-  // }, [swiper.activeIndex]);
+  const { setPreviewImage } = useContext(ImagePreviewContext);
 
   useEffect(() => {
     // 👇 Get the DOM element from the React element
@@ -80,17 +78,18 @@ export default function ImageCarousel(props: ImageCarouselProps) {
     };
   }, []);
 
-  // const items = paths?.map((path) => (
-  //   <img src={`file://${path}`} onDragStart={handleDragStart} alt="simple" />
-  // ));
+  function updatePreview(swiper: Swiper) {
+    const path = swiper.slides[swiper.activeIndex].getAttribute('id');
+    if (path) setPreviewImage(`file://${path}`);
+  }
+
   return (
     <div className="image-carousel">
       <Swiper
-        onSlideChange={(swiper) => {
-          const path = swiper.slides[swiper.activeIndex].getAttribute('id');
-          if (path) setPreviewImage(`file://${path}`);
-        }}
-        modules={[Navigation, Pagination]}
+        scrollbar
+        onSlideChange={(swiper) => updatePreview(swiper)}
+        onSlidesLengthChange={(swiper) => updatePreview(swiper)}
+        modules={[Navigation, Pagination, Scrollbar]}
         grabCursor={false}
         pagination={{
           type: 'custom',
@@ -110,11 +109,7 @@ export default function ImageCarousel(props: ImageCarouselProps) {
         {paths.length > 0 ? (
           paths.map((el) => (
             <SwiperSlide id={el} key={el}>
-              {({ isActive }) => (
-                <div className={isActive ? 'imgBx active' : 'imgBx'}>
-                  <img src={`file://${el}`} alt="" />
-                </div>
-              )}
+              <ImageSlide imgPath={el} removePic={removePic} />
             </SwiperSlide>
           ))
         ) : (

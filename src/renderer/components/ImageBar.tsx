@@ -4,6 +4,7 @@ import { useContext, useState } from 'react';
 import { ImagePreviewContext } from 'renderer/App';
 import ImageCarousel from './ImageCarousel';
 import placeHolderImg from '../../../assets/images/winter_mountains_comic.jpg';
+import { useSwiper } from 'swiper/react';
 
 const SUPPORTED_IMG_TYPES = ['jpg', 'jpeg', 'png', 'svg', 'gif'] as const;
 export type SupportedImageType = (typeof SUPPORTED_IMG_TYPES)[number];
@@ -28,6 +29,10 @@ export default function ImageBar() {
         }
       }
     }
+  }
+
+  function removePic(path: string) {
+    setPictures((oldPics) => oldPics.filter((el) => el !== path));
   }
 
   async function selectPictures() {
@@ -80,7 +85,7 @@ export default function ImageBar() {
           paths={pictures}
           selectPics={selectPictures}
           addPic={addPic}
-          setPreviewImage={setPreviewImage}
+          removePic={removePic}
         />
       </Grid>
     </>
